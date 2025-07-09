@@ -13,19 +13,32 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarGroupLabel,
+  SidebarFooter,
 } from "./ui/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 import { OpenAIIcon, XIcon } from "@/components/icons"
 import { ChatManager, type Chat } from "@/lib/chat-manager"
+import { SettingsModal } from "./settings-modal"
 
 export function AppSidebar() {
   const router = useRouter()
   const [chats, setChats] = React.useState<Chat[]>([])
   const [currentChatId, setCurrentChatId] = React.useState<string | null>(null)
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false)
 
   // Load chats on mount
   React.useEffect(() => {
+    console.log("Loading chats on mount...")
     const loadedChats = ChatManager.getAllChats()
     const currentId = ChatManager.getCurrentChatId()
+    console.log("Loaded chats:", loadedChats)
+    console.log("Current chat ID:", currentId)
     setChats(loadedChats)
     setCurrentChatId(currentId)
   }, [])
@@ -33,15 +46,15 @@ export function AppSidebar() {
   // Listen for storage changes to sync across tabs
   React.useEffect(() => {
     const handleStorageChange = () => {
+      console.log("Storage changed, reloading chats...")
       const loadedChats = ChatManager.getAllChats()
       const currentId = ChatManager.getCurrentChatId()
+      console.log("Reloaded chats:", loadedChats)
       setChats(loadedChats)
       setCurrentChatId(currentId)
     }
 
     window.addEventListener("storage", handleStorageChange)
-
-    // Custom event for same-tab updates
     window.addEventListener("chats-updated", handleStorageChange)
 
     return () => {
@@ -63,14 +76,19 @@ export function AppSidebar() {
   }
 
   const handleChatClick = (chat: Chat) => {
+    // Don't reload if it's already the current chat
+    if (currentChatId === chat.id) {
+      return
+    }
+
     ChatManager.setCurrentChatId(chat.id)
     setCurrentChatId(chat.id)
 
-    // Navigate to chat page with the selected chat
-    router.push("/chat")
+    // Store chat data for loading
+    sessionStorage.setItem("loadChatData", JSON.stringify(chat))
 
-    // Dispatch custom event with chat data
-    window.dispatchEvent(new CustomEvent("load-chat", { detail: chat }))
+    // Navigate to chat page
+    router.push("/chat")
   }
 
   const handleDeleteChat = (e: React.MouseEvent, chatId: string) => {
@@ -95,19 +113,22 @@ export function AppSidebar() {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
     const now = new Date()
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    const diffInMs = now.getTime() - date.getTime()
+    const diffInHours = diffInMs / (1000 * 60 * 60)
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
 
-    if (diffInHours < 24) {
-      return "Dzisiaj"
-    } else if (diffInHours < 48) {
-      return "Wczoraj"
-    } else if (diffInHours < 168) {
-      // 7 days
-      return `${Math.floor(diffInHours / 24)} dni temu`
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60))
+      return diffInMinutes < 1 ? "Teraz" : `${diffInMinutes} min temu`
+    } else if (diffInHours < 24) {
+      return `${Math.floor(diffInHours)} godz. temu`
+    } else if (diffInDays < 7) {
+      return `${Math.floor(diffInDays)} dni temu`
     } else {
       return date.toLocaleDateString("pl-PL", {
         day: "numeric",
         month: "short",
+        year: diffInDays > 365 ? "numeric" : undefined,
       })
     }
   }
@@ -143,13 +164,25 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-500 dark:text-gray-400 px-2 py-1">Historia rozmów</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-gray-500 dark:text-gray-400 px-2 py-1">
+            Historia rozmów ({chats.length})
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {chats.length === 0 ? (
                 <SidebarMenuItem>
                   <div className="px-2 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
                     Brak zapisanych rozmów
+                    <br />
+                    <button
+                      onClick={() => {
+                        console.log("Debug - Current localStorage:", localStorage.getItem("gpt-ui-chats"))
+                        console.log("Debug - All chats:", ChatManager.getAllChats())
+                      }}
+                      className="text-xs underline mt-2"
+                    >
+                      Debug
+                    </button>
                   </div>
                 </SidebarMenuItem>
               ) : (
@@ -157,17 +190,28 @@ export function AppSidebar() {
                   <SidebarMenuItem key={chat.id}>
                     <SidebarMenuButton
                       onClick={() => handleChatClick(chat)}
-                      className={`rounded-[20px] h-auto min-h-10 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] text-sm group relative ${
+                      className={`rounded-[20px] h-auto min-h-12 hover:bg-gray-100 dark:hover:bg-[#2a2a2a] text-sm group relative ${
                         currentChatId === chat.id ? "bg-gray-100 dark:bg-[#2a2a2a]" : ""
                       }`}
                     >
-                      <div className="flex flex-col items-start flex-1 min-w-0 py-1">
-                        <span className="truncate w-full text-left font-medium">{chat.title}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(chat.updatedAt)}</span>
+                      <div className="flex flex-col items-start flex-1 min-w-0 py-2">
+                        <span className="truncate w-full text-left font-medium text-gray-900 dark:text-gray-100">
+                          {chat.title}
+                        </span>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate flex-1">
+                            {chat.messages.length > 0
+                              ? chat.messages[chat.messages.length - 1].content.slice(0, 40) + "..."
+                              : "Brak wiadomości"}
+                          </span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 ml-2 flex-shrink-0">
+                            {formatDate(chat.updatedAt)}
+                          </span>
+                        </div>
                       </div>
                       <button
                         onClick={(e) => handleDeleteChat(e, chat.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-200 dark:hover:bg-[#505050] rounded transition-opacity ml-2"
+                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-gray-200 dark:hover:bg-[#505050] rounded-md transition-opacity ml-2 flex-shrink-0"
                         aria-label="Usuń rozmowę"
                       >
                         <XIcon className="h-3 w-3" />
@@ -181,6 +225,51 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="h-12 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-0 border-0">
+                  <div className="flex items-center w-full">
+                    <div className="w-8 h-8 rounded-full bg-[#999999] flex items-center justify-center mr-3 flex-shrink-0">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium truncate">Profil</span>
+                  </div>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                align="start"
+                className="w-[180px] rounded-[12px] bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#333] shadow-lg p-1"
+              >
+                <div className="space-y-0.5">
+                  <DropdownMenuItem
+                    className="flex items-center gap-2 px-3 py-2 rounded-[8px] hover:bg-gray-100 dark:hover:bg-[#2a2a2a] cursor-pointer focus-visible:outline-none focus-visible:ring-0"
+                    onClick={() => setIsSettingsOpen(true)}
+                  >
+                    <span className="text-sm text-gray-900 dark:text-gray-100">Ustawienia</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-[8px] hover:bg-gray-100 dark:hover:bg-[#2a2a2a] cursor-pointer focus-visible:outline-none focus-visible:ring-0">
+                    <span className="text-sm text-gray-900 dark:text-gray-100">Pomoc</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator className="my-1 bg-gray-200 dark:bg-[#333]" />
+
+                  <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-[8px] hover:bg-gray-100 dark:hover:bg-[#2a2a2a] cursor-pointer focus-visible:outline-none focus-visible:ring-0">
+                    <span className="text-sm text-gray-900 dark:text-gray-100">Wyloguj</span>
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SettingsModal open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
     </Sidebar>
   )
 }

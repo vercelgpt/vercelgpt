@@ -1,19 +1,21 @@
 "use client"
-
-import type * as React from "react"
+import type * as ReactType from "react"
 import { useRouter } from "next/navigation"
 import { PromptBox } from "../prompt-box-demo"
-import { SidebarInset, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
-import { currentModel } from "../lib/model-selector"
+import { SidebarInset } from "@/components/ui/sidebar"
 import { PWAInstall } from "@/components/pwa-install"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { SharedHeader } from "@/components/shared-header"
+import { useState, useEffect } from "react"
+import { ChatManager } from "@/lib/chat-manager"
+
+const CURRENT_MODEL = "gemini-1.5-pro"
 
 export default function Page() {
   const router = useRouter()
-  const { open } = useSidebar()
-  const isMobile = useIsMobile()
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [currentModel, setCurrentModel] = useState(CURRENT_MODEL)
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: ReactType.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const message = formData.get("message") as string
@@ -22,30 +24,32 @@ export default function Page() {
       return
     }
 
-    // Store the message in sessionStorage to pass to chat page
+    setIsTransitioning(true)
+
+    const newChatId = ChatManager.generateChatId()
+    ChatManager.setCurrentChatId(newChatId)
+
     sessionStorage.setItem("initialMessage", message)
     sessionStorage.setItem("selectedModel", currentModel)
+    sessionStorage.setItem("newChatId", newChatId)
 
-    // Navigate to chat screen
-    router.push("/chat")
+    setTimeout(() => {
+      router.push("/chat")
+    }, 150)
   }
 
+  useEffect(() => {
+    sessionStorage.removeItem("initialMessage")
+    sessionStorage.removeItem("selectedModel")
+    sessionStorage.removeItem("newChatId")
+    ChatManager.setCurrentChatId(null)
+  }, [])
+
   return (
-    <SidebarInset className="relative flex flex-col items-center justify-center p-4">
-      {/* Header with Sidebar Trigger - zawsze widoczny */}
-      <div className="absolute top-0 left-0 right-0 z-10 px-3 py-3 bg-transparent backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <SidebarTrigger className="rounded-full hover:bg-gray-100 dark:hover:bg-[#404040]" />
-            <span className="text-black dark:text-white font-medium text-base">DeepSeek R1</span>
-          </div>
-
-          <div className="flex justify-center"></div>
-
-          {/* Pusty div dla zachowania symetrii */}
-          <div className="w-[120px]" />
-        </div>
-      </div>
+    <SidebarInset
+      className={`relative flex flex-col items-center justify-center p-4 transition-opacity duration-300 ${isTransitioning ? "opacity-50" : "opacity-100"}`}
+    >
+      <SharedHeader showModelSelector={true} currentModel={currentModel} onModelChange={setCurrentModel} />
 
       <div className="w-full max-w-xl flex flex-col gap-10">
         <p className="text-center text-3xl text-foreground dark:text-white">How Can I Help You</p>

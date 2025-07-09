@@ -8,9 +8,10 @@ import { PWAProvider } from "@/components/pwa-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
+// Zaktualizuj metadata dla pełnoekranowej online PWA
 export const metadata: Metadata = {
   title: "GPT UI - AI Chat Interface",
-  description: "AI-powered chat interface with multiple models",
+  description: "Pełnoekranowa aplikacja AI z funkcjami online i synchronizacją w chmurze",
   manifest: "/manifest.json",
   themeColor: "#000000",
   viewport: {
@@ -19,10 +20,11 @@ export const metadata: Metadata = {
     maximumScale: 1,
     userScalable: false,
     viewportFit: "cover",
+    interactiveWidget: "resizes-content",
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "GPT UI",
   },
   formatDetection: {
@@ -31,13 +33,18 @@ export const metadata: Metadata = {
   other: {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "GPT UI",
     "application-name": "GPT UI",
     "msapplication-TileColor": "#000000",
     "msapplication-tap-highlight": "no",
+    "msapplication-navbutton-color": "#000000",
+    "apple-mobile-web-app-orientation": "portrait",
+    "apple-touch-fullscreen": "yes",
+    "full-screen": "yes",
+    browsermode: "application",
   },
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -52,11 +59,12 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192x192.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-192x192.png" />
         <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+        <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png" />
       </head>
       <body className={inter.className}>
         <PWAProvider>
           <SidebarProvider>
-            <div className="flex min-h-screen w-full">
+            <div className="flex min-h-screen w-full fullscreen-content">
               <AppSidebar />
               {children}
             </div>

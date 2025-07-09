@@ -1,12 +1,15 @@
 {
-  "name": "GPT UI - AI Chat Interface",
-  "short_name": "GPT UI",
-  "description": "AI-powered chat interface with multiple models",
+  "name": "GPT UI - Online AI Chat",
+  "short_name": "GPT UI Online",
+  "description": "Online AI-powered chat interface with real-time features",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -57,7 +60,32 @@
       "purpose": "maskable any"
     }
   ],
-  "categories": ["productivity", "utilities"],
+  "categories": ["productivity", "utilities", "social"],
   "lang": "pl",
-  "dir": "ltr"
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "New Chat",
+      "short_name": "New Chat",
+      "description": "Start a new conversation",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Recent Chats",
+      "short_name": "Recent",
+      "description": "View recent conversations",
+      "url": "/chat",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }
