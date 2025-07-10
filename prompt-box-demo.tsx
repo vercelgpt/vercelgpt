@@ -169,7 +169,7 @@ export const PromptBox = React.forwardRef<
                       <button
                         type="button"
                         onClick={handlePlusClick}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151] focus-visible:outline-none"
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151]"
                       >
                         <PlusIcon className="h-6 w-6" />
                         <span className="sr-only">Attach image</span>
@@ -184,7 +184,7 @@ export const PromptBox = React.forwardRef<
                     <TooltipTrigger asChild>
                       <button
                         type="button"
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151] focus-visible:outline-none"
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151]"
                       >
                         <MicIcon className="h-5 w-5" />
                         <span className="sr-only">Record voice</span>
@@ -202,7 +202,7 @@ export const PromptBox = React.forwardRef<
                           type={isLoading ? "button" : "submit"}
                           onClick={isLoading ? onStop : undefined}
                           disabled={!hasValue && !isLoading}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 disabled:bg-black/40 dark:disabled:bg-[#515151]"
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors disabled:pointer-events-none bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 disabled:bg-black/40 dark:disabled:bg-[#515151]"
                         >
                           {isLoading ? <SquareIcon className="h-4 w-4" /> : <SendIcon className="h-6 w-6" />}
                           <span className="sr-only">{isLoading ? "Stop generation" : "Send message"}</span>
@@ -277,7 +277,7 @@ export const PromptBox = React.forwardRef<
                   <button
                     type="button"
                     onClick={handlePlusClick}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151] focus-visible:outline-none"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151]"
                   >
                     <PlusIcon className="h-6 w-6" />
                     <span className="sr-only">Attach image</span>
@@ -292,7 +292,7 @@ export const PromptBox = React.forwardRef<
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151] focus-visible:outline-none"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-foreground dark:text-white transition-colors hover:bg-accent dark:hover:bg-[#515151]"
                   >
                     <MicIcon className="h-5 w-5" />
                     <span className="sr-only">Record voice</span>
@@ -310,7 +310,7 @@ export const PromptBox = React.forwardRef<
                       type={isLoading ? "button" : "submit"}
                       onClick={isLoading ? onStop : undefined}
                       disabled={!hasValue && !isLoading}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 disabled:bg-black/40 dark:disabled:bg-[#515151]"
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors disabled:pointer-events-none bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 disabled:bg-black/40 dark:disabled:bg-[#515151]"
                     >
                       {isLoading ? <SquareIcon className="h-4 w-4" /> : <SendIcon className="h-6 w-6" />}
                       <span className="sr-only">{isLoading ? "Stop generation" : "Send message"}</span>

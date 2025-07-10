@@ -360,3 +360,29 @@ select {
     background-position: 200% 0;
   }
 }
+
+/* Remove blue focus outlines globally */
+*:focus {
+  outline: none !important;
+}
+
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus rings from all interactive elements */
+[role="button"]:focus,
+[role="menuitem"]:focus,
+[role="option"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
