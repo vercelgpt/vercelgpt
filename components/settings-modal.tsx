@@ -324,52 +324,49 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl p-0 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#333] rounded-2xl shadow-lg">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#333]">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-white">Ustawienia</h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          </button>
-        </div>
+      <DialogContent className="max-w-[95vw] md:max-w-4xl max-h-[90vh] p-0 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#333] rounded-2xl shadow-lg">
+        <div className="flex h-[80vh] md:h-[600px]">
+          {/* Left Content */}
+          <div className="flex-1 flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#333]">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Ustawienia</h2>
+              <button
+                onClick={() => onOpenChange(false)}
+                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
 
-        {/* Navigation */}
-        <div className="px-4 py-2 border-b border-gray-200 dark:border-[#333]">
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-            {settingsSections.map((section) => {
-              const Icon = section.icon
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors whitespace-nowrap ${
-                    activeSection === section.id
-                      ? "bg-gray-100 dark:bg-[#2a2a2a] text-gray-900 dark:text-white"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{section.label}</span>
-                </button>
-              )
-            })}
+            {/* Content */}
+            <div className="flex-1 p-4 overflow-y-auto scrollbar-hide">{renderSectionContent()}</div>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="p-4 max-h-[60vh] overflow-y-auto scrollbar-hide">{renderSectionContent()}</div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-[#333] flex justify-end">
-          <Button
-            onClick={() => onOpenChange(false)}
-            className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-lg px-4 py-2"
-          >
-            Gotowe
-          </Button>
+          {/* Right Sidebar */}
+          <div className="w-48 border-l border-gray-200 dark:border-[#333] bg-gray-50 dark:bg-[#0a0a0a]">
+            <div className="p-4">
+              <div className="space-y-1">
+                {settingsSections.map((section) => {
+                  const Icon = section.icon
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors text-left ${
+                        activeSection === section.id
+                          ? "bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white shadow-lg border border-gray-200 dark:border-[#333]"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="font-medium">{section.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
