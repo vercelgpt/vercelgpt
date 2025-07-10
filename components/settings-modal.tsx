@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { aiModels } from "@/lib/constants"
-import { Trash2, Moon, Sun, Monitor, User, Settings, Database, Bot, Shield, Bell, X } from "lucide-react"
+import { Trash2, Moon, Sun, Monitor, User, Settings, Database, Bot, Shield, Bell } from "lucide-react"
 
 interface SettingsModalProps {
   open: boolean
@@ -354,14 +354,8 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
           {/* Right Content */}
           <div className="flex-1 flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#333]">
+            <div className="flex items-center justify-start p-4 border-b border-gray-200 dark:border-[#333]">
               <h2 className="text-lg font-medium text-gray-900 dark:text-white">Ustawienia</h2>
-              <button
-                onClick={() => onOpenChange(false)}
-                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              </button>
             </div>
 
             {/* Content */}
